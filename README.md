@@ -2,7 +2,7 @@
 
 ## EQUIPE
 
-Kevin Lucas Figueredo Gomes - 495412
+Kevin Lucas Figueredo Gomes - 495412 <br>
 Nillia Sousa da Silva - 499957
 Victor Emanuel Pegado de Lima - 493886
 Vinícius dos Santos Batista - 504247
