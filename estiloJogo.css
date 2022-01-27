@@ -1,0 +1,82 @@
+body,
+ul,
+li,
+p {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+    font-size: 1.2rem;
+    font-family: Arial;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+    
+}
+
+
+a {
+    text-decoration: none;
+    color: white;
+    background-color: rgb(31, 31, 31);
+    position: fixed;
+    font-size: 40;
+    padding-left: 820px;
+    padding-right: 830px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
+
+canvas {
+    border:1px solid #d3d3d3;
+    background-color: #5e5e5e;  
+    margin-top: 100px;  
+    margin-left: 400px;        
+    zoom: 150%;
+}
+
+.flexbox {
+    
+    display: flex;
+    flex-wrap: wrap ;
+    max-width: 1000px;
+    margin: 10 auto;
+}
+
+.flexbox > div {
+    flex: 10px;
+    margin-top: 40px;
+    margin-left: 75px;
+    margin-bottom: 0px;
+}
+
+.footer {
+    display: flex;
+    flex-wrap: wrap ;
+    max-width: 400px;
+    padding-top: 160px;
+    padding-bottom: 60px;
+    margin: auto;
+}
+
+.restart {
+  position: absolute;
+  background-color: #acacac;
+  color: black;  
+  font-size: 25px;
+  border-radius: 10px;
+  padding-top: 10px;
+  padding-left: 10px;
+  padding-bottom: 10px;
+  display: block;
+  left: 847px;
+  bottom: -35px;
+  width: 25%;
+  border: 3px solid rgb(0, 0, 0);
+}
+
+.restart:hover {
+  background-color: #292929;
+  color: white;
+}

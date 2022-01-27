@@ -1,0 +1,338 @@
+<html>
+<head>
+    <link rel="stylesheet" href="./estiloJogo.css"/>
+    <title>Trabalho AMII</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <a>Trabalho AMII</a>
+</head>
+
+<body style="background-color: rgb(42, 43, 43);">
+
+    <div id="myfilter" style="position: absolute; top: 150px; left: 600; padding-bottom: 100px; background-color: rgb(0, 0, 0); opacity: 0.3; width: 725px; height: 310px; display: block;">
+    </div>
+    
+    <div id="myrestartbutton" style="position: absolute; padding-top: 350px; padding-left: 940px; display: block;">
+    <button class= "restart" onclick="restartGame()">Jogar Novamente</button>
+    </div>
+    
+    <div id="canvascontainer"></div>
+    
+    <br>
+
+    <div>
+
+    <script>
+        var myGameArea;
+        var myGamePiece;
+        var myObstacles = [];
+        var myscore;
+        //var gameOver = false;
+                                 
+        function startGame() {
+            myGameArea = new gamearea();
+            myGamePiece = new component(30, 30, "red", 10, 75);
+            myscore = new component("15px", "Consolas", "black", -5, 25, "text");
+            document.getElementById("myfilter").style.display = "none";
+            document.getElementById("myrestartbutton").style.display = "none";
+            myGameArea.start();
+        }
+        
+        function restartGame() {
+            myGameArea.clear();
+            document.getElementById("canvascontainer").innerHTML = "";             
+            document.getElementById("myfilter").style.display = "none";
+            document.getElementById("myrestartbutton").style.display = "none";
+            myGameArea.stop();
+            myGameArea.clear();
+            myGameArea = {};
+            myGamePiece = {};
+            myObstacles = [];
+            myscore = {};            
+            startGame()            
+        }
+        
+        function gamearea() {
+            this.canvas = document.createElement("canvas");
+            this.canvas.width = 480;
+            this.canvas.height = 270;    
+            document.getElementById("canvascontainer").appendChild(this.canvas);
+            this.context = this.canvas.getContext("2d");
+            this.pause = false;
+            this.frameNo = 0;
+            this.start = function() {
+                this.interval = setInterval(updateGameArea, 20);
+            }
+            this.stop = function() {
+                clearInterval(this.interval);
+                this.pause = true;
+            }
+            this.clear = function(){
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+        }
+        
+        function component(width, height, color, x, y, type) {
+        
+            this.type = type;
+            if (type == "text") {
+                this.text = color;
+            }
+            this.score = 0;    
+            this.width = width;
+            this.height = height;
+            this.speedX = 0;
+            this.speedY = 0;    
+            this.x = x;
+            this.y = y;
+                           
+            this.update = function() {
+                ctx = myGameArea.context;
+                if (this.type == "text") {
+                    ctx.font = this.width + " " + this.height;
+                    ctx.fillStyle = color;
+                    ctx.fillText(this.text, this.x+167, this.y + 240);
+                } else {
+                    ctx.fillStyle = color;
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                }
+            }
+
+
+            this.passBy = function(otherobj2) {
+                var myleft = this.x;
+                var myright = this.x + (this.width);
+                var otherleft = otherobj2.x;
+                var otherright = otherobj2.x + (otherobj2.width);
+                var canPass = true;
+                var pass = true;               
+
+                if ((myright < otherleft) || (myleft > otherright)) {
+                    pass = false;
+                } 
+
+                return pass;     
+
+             }
+             
+
+            this.crashWith = function(otherobj) {
+                var myleft = this.x;
+                var myright = this.x + (this.width);
+                var mytop = this.y;
+                var mybottom = this.y + (this.height);
+                var otherleft = otherobj.x;
+                var otherright = otherobj.x + (otherobj.width);
+                var othertop = otherobj.y;
+                var otherbottom = otherobj.y + (otherobj.height);
+                var crash = true;
+                
+                if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {
+                    crash = false;
+                    }
+                
+                return crash;
+                
+            }
+        }     
+        
+        
+        function updateGameArea() {
+            var x, y, min, max, height, gap;                             
+            
+            for (i = 0; i < myObstacles.length; i += 1) {                
+                if (myGamePiece.crashWith(myObstacles[i]) && myscore.score < 1) {                    
+                    myGameArea.stop();
+                    document.getElementById("myfilter").style.display = "block";
+                    document.getElementById("myrestartbutton").style.display = "block";
+                    return;
+                } 
+            }
+
+            if (myGameArea.pause == false) {
+                
+                myGameArea.clear();
+                myGameArea.frameNo += 1;                               
+                var sizeType1 = Math.random()*150;
+                var interval = 100;                
+                var obstaclesSpeed = 5;
+                var hMin = 100;
+                var hMax = 150;
+                var gMin = 50;
+                var gMax = 90; 
+                var obstaclesColor = "darkturquoise"; 
+                var fase = 0;           
+                
+                for (i = 0; i < myObstacles.length; i += 1) {
+                    if (myGamePiece.crashWith(myObstacles[i])){
+                        myGamePiece.speedX = 0;
+                        myGamePiece.speedY = 0;
+                        myObstacles.splice(i,1);
+                        myscore.score -= 1;
+                        myObstacles[i].update();
+                    }
+                } 
+
+                for (i = 0; i < myObstacles.length; i += 1) {
+                 if (myGamePiece.passBy(myObstacles[i])) {                                            
+                        myscore.score+=1;                                                                                                     
+                        myObstacles[i].update();                                                                                                                                    
+                    } 
+                } 
+
+                if (myscore.score > 5 && myscore.score <= 20 ) {
+                fase = 1;    
+                var sizeType1 = Math.random()*207;
+                var interval = 60;                
+                var obstaclesSpeed = 4.5;
+                var hMin = 70;
+                var hMax = 120;
+                var gMin = 100;
+                var gMax = 120;
+                var obstaclesColor = "deepskyblue";    
+                }
+
+                if (myscore.score > 20 && myscore.score <= 30 ) {
+                fase = 2;
+                var sizeType1 = Math.random()*207;
+                var interval = 40;                
+                var obstaclesSpeed = 5;
+                var hMin = 60;
+                var hMax = 110;
+                var gMin = 50;
+                var gMax = 90;
+                var obstaclesColor = "dodgerblue";    
+                }
+
+                if (myscore.score > 30 && myscore.score <= 50 ) {
+                fase = 3; 
+                var sizeType1 = Math.random()*207;
+                var interval = 30;                
+                var obstaclesSpeed = 5.5;
+                var hMin = 50;
+                var hMax = 100;
+                var gMin = 50;
+                var gMax = 90;
+                var obstaclesColor = "royalblue";    
+                }
+
+                if (myscore.score > 50 && myscore.score <= 80 ) {
+                fase = 4; 
+                var sizeType1 = Math.random()*207;
+                var interval = 25;                
+                var obstaclesSpeed = 6;
+                var hMin = 45;
+                var hMax = 90;
+                var gMin = 50;
+                var gMax = 90;
+                var obstaclesColor = "navy";    
+                }
+
+                if (myscore.score > 80 && myscore.score <= 120 ) {
+                fase = 5; 
+                var sizeType1 = Math.random()*207;
+                var interval = 15;                
+                var obstaclesSpeed = 7;
+                var hMin = 40;
+                var hMax = 80;
+                var gMin = 50;
+                var gMax = 90;
+                var obstaclesColor = "midnightblue";    
+                }
+
+                if (myscore.score > 120) {
+                    fase = 5; 
+                    myGameArea.stop();
+                    document.getElementById("myfilter").style.display = "block";
+                    document.getElementById("myrestartbutton").style.display = "block";
+                    //return;
+                }
+
+                if (myGameArea.frameNo == 1 || everyinterval(interval)) {
+                    x = myGameArea.canvas.width;
+                    y = myGameArea.canvas.height - 100;
+                    min = hMin;
+                    max = hMax;
+                    height = Math.floor(Math.random()*(max-min+1)+min);
+                    min = gMin;
+                    max = gMax;
+                    gap = Math.floor(Math.random()*(max-min+1)+min);
+                    myObstacles.push(new component(height, height, obstaclesColor, x, sizeType1));                                       
+                }
+
+                for (i = 0; i < myObstacles.length; i += 1) {
+                    myObstacles[i].x -= obstaclesSpeed;                            
+                    myObstacles[i].update();
+                }                       
+
+                myGamePiece.x += myGamePiece.speedX;
+                myGamePiece.y += myGamePiece.speedY;    
+                myscore.text="FASE: "+ fase + " | " + "SCORE: " + myscore.score;
+                                
+                if (myGamePiece.x >= 100) {
+                    myGamePiece.x = 100;
+                }   
+                if (myGamePiece.x <= 10) {
+                    myGamePiece.x = 10;
+                }  
+                if (myGamePiece.y >= 240) {
+                    myGamePiece.y = 240;
+                }  
+                if (myGamePiece.y <= 0) {
+                    myGamePiece.y = 0;
+                }
+
+
+                myscore.update();  
+                myGamePiece.update();                        
+
+                }
+            }
+        
+            function everyinterval(n) {
+                if ((myGameArea.frameNo / n) % 1 == 0) {return true;}
+                return false;
+            }        
+            
+            document.onkeydown = function(e) {
+                switch (e.keyCode) {            
+                case 37:
+                myGamePiece.speedX = -5; 
+            break;
+                case 39:
+                myGamePiece.speedX = 5;
+            break;
+                case 38:
+                myGamePiece.speedY = -5; 
+            break;
+                case 40:
+                myGamePiece.speedY = 5; 
+            break;
+            }
+            e.preventDefault();
+        }
+
+        document.onkeyup = function(e) {
+            myGamePiece.speedX = 0; 
+            myGamePiece.speedY = 0;
+        }
+
+        startGame();
+        
+    </script>
+
+    </div>
+<section class = "flexbox">
+    <div> 
+        <img src="./_images/tutorial.png">           
+    </div>
+    
+</section>
+</body>
+<footer class = "footer">
+    <div>
+        <img class = "nomes" src= "_images/FOOTER.png">        
+    </div>
+    
+</footer>
+
+</html>
